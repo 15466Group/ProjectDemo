@@ -8,6 +8,7 @@ public class MasterBehaviour : MonoBehaviour {
 	public bool seesPlayer { get; set; }
 	public bool seesDeadPeople { get; set; }
 	public bool hearsSomething { get; set; }
+	public bool isDead { get; set; }
 
 	public ReachGoal reachGoal { get; set; }
 	private Wander wander;
@@ -31,11 +32,14 @@ public class MasterBehaviour : MonoBehaviour {
 		reachGoal.Starta ();
 		wander.Starta ();
 
-		Debug.Log (transform.name);
+//		Debug.Log (transform.name);
 	}
 
 	public void Updatea(){
 		//decision tree later for different combination of senses being true
+		if (isDead) {
+			return;
+		}
 		if (!(seesPlayer || seesDeadPeople || hearsSomething)) {
 //			Debug.Log ("Wander");
 			wander.Updatea ();
@@ -48,5 +52,15 @@ public class MasterBehaviour : MonoBehaviour {
 
 	public bool isReachingGoal(){
 		return (seesPlayer || seesDeadPeople || hearsSomething);
+	}
+
+	public void getHit(int damage) {
+		if (isDead) {
+			return;
+		}
+		reachGoal.getHit (damage);
+		if (damage >= 3) {
+			isDead = true;
+		}
 	}
 }

@@ -13,7 +13,7 @@ public class GoalControl : MonoBehaviour {
 	void Start()
 	{
 		smooth = 5.0f;
-		scaler = 25.0f;
+		scaler = 40.0f;
 		walkingSpeed = 5.0f;
 		velocity = Vector3.zero;
 		anim = GetComponent<Animation> ();

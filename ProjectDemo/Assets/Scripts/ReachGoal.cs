@@ -40,7 +40,7 @@ public class ReachGoal: NPCBehaviour {
 		endCoords = new Vector3 (next.x + 10.0f, 0.0f, next.z + 10.0f);
 		path = new List<Node> ();
 		inArrivalRadius = false;
-		arrivalRadius = 25.0f;
+		arrivalRadius = 0.0f;
 		Grid G = new Grid(plane, goalPos, nodeSize, swamps);
 		G.initStart ();
 		state = new State (new List<Node> (), new List<Node> (), new Dictionary<Node, Node> (),

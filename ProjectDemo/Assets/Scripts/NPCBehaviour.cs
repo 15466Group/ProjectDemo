@@ -38,13 +38,15 @@ public class NPCBehaviour : MonoBehaviour {
 	public string idle;
 	public string walking;
 	public string running;
+	public string dying;
+	public string hit;
 	
 	// Use this for initialization
 	public virtual void Starta () {
 		velocity = new Vector3 ();
 		acceleration = new Vector3 ();
 		accMagDefault = 50.0f;
-		speedMaxDefault = 14.0f;
+		speedMaxDefault = 30.0f;
 		walkingSpeed = 15.0f;
 		epsilon = 2.0f;
 		searchRadius = 100.0f;
@@ -77,7 +79,7 @@ public class NPCBehaviour : MonoBehaviour {
 		} else if (mag > walkingSpeed) {
 			anim.CrossFade (running);
 		} else {
-			anim.CrossFade(idle);
+			anim.CrossFade (idle);
 		}
 	}
 
@@ -221,14 +223,35 @@ public class NPCBehaviour : MonoBehaviour {
 //				speedMax = Mathf.Min (Mathf.Pow (1.1f, distance) + 10.0f, speedMaxDefault);
 //			}
 //		}
-		if (isReachingGoal) {
-			if (inArrivalRadius) {
-				transform.gameObject.layer = 8;
-				speedMax = 0.0f; 
-			} else { //exponential growth translated up by 10, capped at originalMaxSpeed
-				transform.gameObject.layer = 0;
-				speedMax = Mathf.Min (Mathf.Pow (1.1f, Vector3.Distance(transform.position, target)) + 10.0f, speedMaxDefault);
-			}
+//		if (isReachingGoal) {
+//			if (inArrivalRadius) {
+//				transform.gameObject.layer = 8;
+//				speedMax = 0.0f; 
+//			} else { //exponential growth translated up by 10, capped at originalMaxSpeed
+//				transform.gameObject.layer = 0;
+//				speedMax = Mathf.Min (Mathf.Pow (1.1f, Vector3.Distance(transform.position, target)) + 10.0f, speedMaxDefault);
+//			}
+//		}
+	}
+
+	//upon getting hit, momentarily set velocity to zero
+	public virtual void getHit(int damage) {
+		switch (damage) {
+		case 0 :
+			break;
+		case 1 :
+			anim.CrossFade (hit);
+			Debug.Log ("hit");
+			break;
+		case 2 :
+			anim.CrossFade (hit);
+			break;
+		case 3 :
+			anim.CrossFade (dying);
+			break;
+		default:
+			Debug.Log ("default");
+			break;
 		}
 	}
 }

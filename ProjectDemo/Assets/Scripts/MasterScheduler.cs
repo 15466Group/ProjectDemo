@@ -97,19 +97,45 @@ public class MasterScheduler : MonoBehaviour {
 	}
 
 	void updateStatus(GameObject currChar, MasterBehaviour mb){
-		if (timer < 5.0f) {
-			mb.seesPlayer = false;
-			mb.seesDeadPeople = false;
-			mb.hearsSomething = false;
-			mb.health = 100.0f;
-			Debug.Log(timer);
-		} else if (timer < 25.0f) {
-			Debug.Log ("pathfinding time... " + player.transform.position);
-			mb.seesPlayer = true;
-			mb.poi = player.transform.position;
-			Debug.Log ("pathfinding time start... " + currChar.transform.position);
-		} else {
-			timer = 0.0f;
+//		if (timer < 5.0f) {
+//			mb.seesPlayer = false;
+//			mb.seesDeadPeople = false;
+//			mb.hearsSomething = false;
+//			mb.health = 100.0f;
+//			Debug.Log(timer);
+//		} else if (timer < 25.0f) {
+//			Debug.Log ("pathfinding time... " + player.transform.position);
+//			mb.seesPlayer = true;
+//			mb.poi = player.transform.position;
+//			Debug.Log ("pathfinding time start... " + currChar.transform.position);
+//		} else {
+//			timer = 0.0f;
+//		}
+		if (mb.isDead) {
+			return;
+		}
+		RaycastHit hit;
+		Debug.DrawRay (currChar.transform.position, (Mathf.Sqrt (3) * currChar.transform.forward + currChar.transform.right).normalized * 100.0f, Color.red);
+		Debug.DrawRay (currChar.transform.position, (Mathf.Sqrt (3) * currChar.transform.forward - currChar.transform.right).normalized * 100.0f, Color.red);
+		if (Vector3.Angle (currChar.transform.forward, player.transform.position - currChar.transform.position) <= 30.0f) {
+			if (Physics.Raycast (currChar.transform.position, player.transform.position - currChar.transform.position, out hit, 100.0f)) {
+				if (hit.collider.gameObject == player) {
+					mb.seesPlayer = true;
+					mb.poi = player.transform.position;
+				} else if (Vector3.Distance (currChar.transform.position, mb.poi) < 10f) {
+					mb.seesPlayer = false;
+					mb.seesDeadPeople = false;
+					mb.hearsSomething = false;
+					mb.health = 100.0f;
+				} else {
+				}
+			} else if (Vector3.Distance (currChar.transform.position, mb.poi) < 10f) {
+				mb.seesPlayer = false;
+				mb.seesDeadPeople = false;
+				mb.hearsSomething = false;
+				mb.health = 100.0f;
+			} else {
+			}
 		}
 	}
 }
