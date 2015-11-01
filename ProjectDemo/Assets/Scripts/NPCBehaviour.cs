@@ -40,7 +40,7 @@ public class NPCBehaviour : MonoBehaviour {
 	public string running;
 	
 	// Use this for initialization
-	public virtual void Start () {
+	public virtual void Starta () {
 		velocity = new Vector3 ();
 		acceleration = new Vector3 ();
 		accMagDefault = 50.0f;
@@ -70,7 +70,7 @@ public class NPCBehaviour : MonoBehaviour {
 		doAnimation ();
 	}
 
-	protected void doAnimation(){
+	public void doAnimation(){
 		float mag = velocity.magnitude;
 		if (mag > 0.0f && mag <= walkingSpeed) {
 			anim.CrossFade (walking);

@@ -5,8 +5,8 @@ public class Flee : NPCBehaviour {
 
 	public GameObject goal;
 
-	public override void Start(){
-		base.Start ();
+	public override void Starta(){
+		base.Starta ();
 		target = goal.transform.position;
 		doAcceleration ();
 		isWanderer = false;

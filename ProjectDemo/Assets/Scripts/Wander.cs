@@ -12,8 +12,8 @@ public class Wander : NPCBehaviour {
 	protected float rotationSpeedDegDefault { get; set; }
 
 	// Use this for initialization
-	public override void Start () {
-		base.Start ();
+	public override void Starta () {
+		base.Starta ();
 		newPos = new Vector3 ();
 		radius = 2.0f;
 		accMagDefault = 50.0f;

@@ -4,8 +4,8 @@ using System.Collections;
 public class WanderVLeader : Wander {
 		
 	// Use this for initialization
-	public override void Start () {
-		base.Start ();
+	public override void Starta () {
+		base.Starta ();
 		rotationSpeedDegDefault= 0.1f;
 		speedMaxDefault = 20.0f;
 		

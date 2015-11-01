@@ -8,8 +8,8 @@ public class ReachGoalVFormation: NPCBehaviour {
 	private int VFormID;
 	
 	// Use this for initialization
-	public override void Start () {
-		base.Start ();
+	public override void Starta () {
+		base.Starta ();
 		counter ++;
 		VFormID = counter;
 		target = calculateVPosition ();

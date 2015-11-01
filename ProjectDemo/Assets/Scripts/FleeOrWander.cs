@@ -15,10 +15,10 @@ public class FleeOrWander : NPCBehaviour {
 	private int lastZone;
 
 	// Use this for initialization
-	public override void Start () {
+	public override void Starta () {
 		fleeScript = GetComponent<Flee>();
 		wanderScript = GetComponent<Wander> ();
-		base.Start ();
+		base.Starta ();
 		fleeDist = rayDist;
 		interDist = 3.0f * rayDist;
 		isReachingGoal = false;

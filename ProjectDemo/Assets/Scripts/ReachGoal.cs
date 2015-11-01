@@ -4,14 +4,22 @@ using System.Collections.Generic;
 
 public class ReachGoal: NPCBehaviour {
 
-	public GameObject goal;
+	public Vector3 goalPos { get; set; } //the point of interest, poi, where they are trying to get to
 	private bool hitNextNode;
 
-	public List<Node> path;
-	public Vector3 next;
-	public Vector3 nextCoords;
-	public Vector3 transCoords;
-	public Vector3 endCoords;
+	public List<Node> path { get; set; }
+	public Vector3 next { get; set; }
+	public Vector3 nextCoords { get; set; }
+	public Vector3 transCoords { get; set; }
+	public Vector3 endCoords { get; set; }
+
+	public GameObject plane { get; set; }
+	public GameObject swamps { get; set; }
+	public float nodeSize { get; set; }
+	public State state { get; set; }
+	public Grid G;
+
+
 	public float swampCost;
 	private LayerMask dynamicLayer;
 
@@ -19,8 +27,8 @@ public class ReachGoal: NPCBehaviour {
 	private Node n;
 
 	// Use this for initialization
-	public override void Start () {
-		base.Start ();
+	public override void Starta () {
+		base.Starta ();
 		dynamicLayer = 1 << LayerMask.NameToLayer ("Dynamic");
 		acceleration = base.calculateAcceleration (target);
 		isWanderer = false;
@@ -33,6 +41,10 @@ public class ReachGoal: NPCBehaviour {
 		path = new List<Node> ();
 		inArrivalRadius = false;
 		arrivalRadius = 25.0f;
+		Grid G = new Grid(plane, goalPos, nodeSize, swamps);
+		G.initStart ();
+		state = new State (new List<Node> (), new List<Node> (), new Dictionary<Node, Node> (),
+		                  null, null, swampCost, G, null, false, false);
 	}
 
 	public Node nextStep () {
@@ -66,6 +78,7 @@ public class ReachGoal: NPCBehaviour {
 	//scheduler gives current player a new path, so set the next node accordingly
 	public void assignedPath(List<Node> p){
 		path = p;
+//		hitNextNode = true;
 		hitNextNode = false;
 		if(path.Count > 0)
 			next = path [0].loc;
@@ -82,7 +95,7 @@ public class ReachGoal: NPCBehaviour {
 		if (hits.Length > 0) {
 			inArrivalRadius = false;
 		} else {
-			inArrivalRadius = Vector3.Distance (goal.transform.position, transform.position) <= arrivalRadius;
+			inArrivalRadius = Vector3.Distance (goalPos, transform.position) <= arrivalRadius;
 		}
 	}
 }

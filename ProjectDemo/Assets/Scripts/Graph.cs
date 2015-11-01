@@ -30,17 +30,20 @@ public class Graph : Object {
 	public State getPath(State s) {
 
 		//search less nodes as the dictpath gets large, initially search 100 nodes at a time
-		int dictlen = s.dictPath.Count;
-		totalNodesToSearch = (int)((-1.0f / 10.0f) * (float)dictlen + 100.0f);
-		totalNodesToSearch = Mathf.Max (20, totalNodesToSearch);
+		totalNodesToSearch = 100;
+//		int dictlen = s.dictPath.Count;
+//		totalNodesToSearch = (int)((-1.0f / 10.0f) * (float)dictlen + 100.0f);
+//		totalNodesToSearch = Mathf.Max (20, totalNodesToSearch);
 
 		numNodesSeen = 0;
 
 		//infinite heuristic
-		Node estimEndNode = new Node(false, Vector3.zero, false, 0, 0, Mathf.Infinity, false);
+		Node estimEndNode = new Node(false, Vector3.zero, 0, 0, Mathf.Infinity, false);
 
 		List<Node> failPath = new List<Node> ();
 		failPath.Add (s.endNode);
+
+		Debug.Log ("EndNode: " + s.endNode.loc);
 
 		while (s.open.Count > 0) {
 			Node current = findSmallestVal(s.open);
@@ -61,23 +64,22 @@ public class Graph : Object {
 			}
 			if (numNodesSeen >= totalNodesToSearch){
 				//do not keep using this search because endNode is not free
-				if (!s.endNode.free){
-					s.path = makePath (s.dictPath, estimEndNode);
-					s.open = new List<Node> ();
-					s.closed = new List<Node> ();
-					s.startNode = null;
-					s.endNode = null;
-//					s.sGrid = null;
-					s.ongoing = false;
-					s.dictPath = new Dictionary<Node, Node> ();
-				} 
-				else {
-					s.ongoing = true;
-					//only use estimated path if the current character's old state
-					//does not already have a full path to the endNode
-					if (!s.hasFullPath)
-						s.path = makePath(s.dictPath, estimEndNode);
-				}
+//				if (!s.endNode.free){
+				s.path = makePath (s.dictPath, estimEndNode);
+				s.open = new List<Node> ();
+				s.closed = new List<Node> ();
+				s.startNode = null;
+				s.endNode = null;
+				s.ongoing = false;
+				s.dictPath = new Dictionary<Node, Node> ();
+//				} 
+//				else {
+//					s.ongoing = true;
+//					//only use estimated path if the current character's old state
+//					//does not already have a full path to the endNode
+//					if (!s.hasFullPath)
+//						s.path = makePath(s.dictPath, estimEndNode);
+//				}
 				return s;
 			}
 			s.open.Remove (current);
@@ -125,15 +127,15 @@ public class Graph : Object {
 		while (dictPath.ContainsKey(currentNode)) {
 			//dont need to keep reconstructing if the currentNode is close
 			//enough to the character
-//			currentNode = dictPath[currentNode];
-//			path.Add(currentNode);
-			if (!withinDistance(currentNode, charNode)){
-				currentNode = dictPath[currentNode];
-				path.Add(currentNode);
-			}
-			else {
-				break;
-			}
+			currentNode = dictPath[currentNode];
+			path.Add(currentNode);
+//			if (!withinDistance(currentNode, charNode)){
+//				currentNode = dictPath[currentNode];
+//				path.Add(currentNode);
+//			}
+//			else {
+//				break;
+//			}
 		}
 		path.Reverse ();
 		Node n = null;

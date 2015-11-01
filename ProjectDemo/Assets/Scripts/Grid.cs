@@ -5,12 +5,11 @@ using System.Collections.Generic;
 public class Grid {
 
 	public float nodeSize;
-	private GameObject goal;
+	public Vector3 goalPos { get; set; }
 	private GameObject plane;
 
 	private int obstacleLayer;
 	private int swampLayer;
-	private int goalLayer;
 	private int dynamicLayer;
 
 	public Node[,] grid;
@@ -22,9 +21,9 @@ public class Grid {
 	
 	public GameObject swamps;
 
-	public Grid (GameObject p, GameObject goall, float nS, GameObject s) {
+	public Grid (GameObject p, Vector3 goalp, float nS, GameObject s) {
 		plane = p;
-		goal = goall;
+		goalPos = goalp;
 		nodeSize = nS;
 		swamps = s;
 	}
@@ -43,11 +42,10 @@ public class Grid {
 
 		obstacleLayer = 1 << LayerMask.NameToLayer ("Obstacles");
 		swampLayer = 1 << LayerMask.NameToLayer ("Swamp");
-		goalLayer = 1 << LayerMask.NameToLayer ("Goal");
 		dynamicLayer = 1 << LayerMask.NameToLayer ("Dynamic");
 
 		initializeGrid ();
-		updateGrid ();
+		updateGrid (goalPos);
 	}
 
 	public void initializeGrid(){
@@ -57,69 +55,68 @@ public class Grid {
 				float zp = -(j * nodeSize + (nodeSize/2.0f)) + worldNW.z;
 				Vector3 nodeCenter = new Vector3(xp, 0.0f, zp);
 				Collider[] hits = Physics.OverlapSphere(nodeCenter, nodeSize/2.0f, obstacleLayer | swampLayer | dynamicLayer);
-				bool isGoal = checkIfContainsTag(hits, "Player");
-				float h = Vector3.Distance(nodeCenter, goal.transform.position);
+				float h = Vector3.Distance(nodeCenter, goalPos);
 				int len = hits.Length;
 				if(len == 0) { 
-					grid[i,j] = new Node(true, nodeCenter, isGoal, i, j, h, false);
+					grid[i,j] = new Node(true, nodeCenter, i, j, h, false);
 				}
 				else {
 					bool isSwamp = checkIfContainsTag(hits, "Swamp");
 					bool free;
-					if ((isSwamp || isGoal) && len == 1){
+					if ((isSwamp) && len == 1){
 						free = true;
 					}
 					else {
 						free = false;
 					}
-					grid[i,j] = new Node(free, nodeCenter, isGoal, i, j, h, isSwamp);
+					grid[i,j] = new Node(free, nodeCenter, i, j, h, isSwamp);
 				}
 			}
 		}
 	}
 	
-	public void updateGrid(){
+	public void updateGrid(Vector3 g){
+		goalPos = g;
 		for (int i = 0; i < gridWidth; i++) {
 			for (int j = 0; j < gridHeight; j ++) {
 				float xp = i * nodeSize + (nodeSize/2.0f) + worldNW.x;
 				float zp = -(j * nodeSize + (nodeSize/2.0f)) + worldNW.z;
 				Vector3 nodeCenter = new Vector3(xp, 0.0f, zp);
-				Collider[] hits = Physics.OverlapSphere(nodeCenter, nodeSize/2.0f, obstacleLayer | swampLayer | dynamicLayer); // | goalLayer
-				bool isGoal = checkIfContainsTag(hits, "Player");
-				float h = Vector3.Distance(nodeCenter, goal.transform.position);
+				Collider[] hits = Physics.OverlapSphere(nodeCenter, nodeSize/2.0f, obstacleLayer | swampLayer | dynamicLayer);
+				float h = Vector3.Distance(nodeCenter, goalPos);
 				int len = hits.Length;
 				if(len == 0) {
-					grid[i,j] = new Node(true, nodeCenter, isGoal, i, j, h, grid[i,j].isSwamp);
+					grid[i,j] = new Node(true, nodeCenter, i, j, h, grid[i,j].isSwamp);
 				}
 				else {
 					bool isSwamp = checkIfContainsTag(hits, "Swamp");
 					bool free;
-					if ((isSwamp || isGoal) && len == 1){
+					if ((isSwamp) && len == 1){
 						free = true;
 					}
 					else {
 						free = false;
 					}
-					grid[i,j] = new Node(free, nodeCenter, isGoal, i, j, h, grid[i,j].isSwamp);
+					grid[i,j] = new Node(free, nodeCenter, i, j, h, grid[i,j].isSwamp);
 				}
 			}
 		}
 	}
 
-	void OnDrawGizmos() {
-		for (int i = 0; i < gridWidth; i++) {
-			for (int j = 0; j < gridHeight; j ++) {
-				Gizmos.color = Color.red;
-				if (grid[i,j].isGoal){
-					Gizmos.color = Color.green;
-					Gizmos.DrawCube (grid [i, j].loc, new Vector3 (nodeSize, 1.0f, nodeSize));
-				}
-				if (!grid[i,j].free) {
-					Gizmos.DrawCube (grid [i, j].loc, new Vector3 (nodeSize, 1.0f, nodeSize));
-				}
-			}
-		}
-	}
+//	void OnDrawGizmos() {
+//		for (int i = 0; i < gridWidth; i++) {
+//			for (int j = 0; j < gridHeight; j ++) {
+//				Gizmos.color = Color.red;
+//				if (grid[i,j].isGoal){
+//					Gizmos.color = Color.green;
+//					Gizmos.DrawCube (grid [i, j].loc, new Vector3 (nodeSize, 1.0f, nodeSize));
+//				}
+//				if (!grid[i,j].free) {
+//					Gizmos.DrawCube (grid [i, j].loc, new Vector3 (nodeSize, 1.0f, nodeSize));
+//				}
+//			}
+//		}
+//	}
 
 	bool checkIfContainsTag(Collider[] hits, string tag){
 		bool foundTag = false;
