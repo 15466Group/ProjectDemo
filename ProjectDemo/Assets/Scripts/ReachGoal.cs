@@ -41,7 +41,7 @@ public class ReachGoal: NPCBehaviour {
 		}
 		target = nextTarget();
 		checkArrival ();
-		base.Update ();
+		base.Updatea ();
 		return n;
 	}
 

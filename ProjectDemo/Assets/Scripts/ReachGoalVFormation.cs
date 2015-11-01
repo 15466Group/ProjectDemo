@@ -22,9 +22,9 @@ public class ReachGoalVFormation: NPCBehaviour {
 		closeRayDistDefault = 15.0f;
 	}
 	
-	public override void Update () {
+	public override void Updatea () {
 		target = calculateVPosition ();
-		base.Update ();
+		base.Updatea ();
 	}
 
 	Vector3 calculateVPosition () {

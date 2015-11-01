@@ -63,7 +63,7 @@ public class NPCBehaviour : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	public virtual void Update () {
+	public virtual void Updatea () {
 		biasDir = Vector3.zero;
 		doPositionAndVelocity ();
 		doAcceleration ();

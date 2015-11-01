@@ -12,9 +12,9 @@ public class Flee : NPCBehaviour {
 		isWanderer = false;
 	}
 
-	public override void Update(){
+	public override void Updatea(){
 		target = goal.transform.position;
-		base.Update ();
+		base.Updatea ();
 	}
 
 	protected override void doAcceleration(){

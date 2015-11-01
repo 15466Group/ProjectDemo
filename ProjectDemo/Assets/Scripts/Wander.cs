@@ -29,7 +29,7 @@ public class Wander : NPCBehaviour {
 	}
 	
 	// Update is called once per frame
-	public override void Update () {
+	public override void Updatea () {
 		//choosing a new position to accelerate towards
 		if (biasDir == Vector3.zero) {
 			//the character is not being affected by any obstacle
@@ -57,6 +57,6 @@ public class Wander : NPCBehaviour {
 		newPos = transform.position + tempDir;
 
 		target = newPos;
-		base.Update ();
+		base.Updatea ();
 	}
 }

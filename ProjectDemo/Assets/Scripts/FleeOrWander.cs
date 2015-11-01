@@ -67,7 +67,7 @@ public class FleeOrWander : NPCBehaviour {
 //	}
 
 	// Update is called once per frame
-	public override void Update () {
+	public override void Updatea () {
 		actualDist = Vector3.Distance (transform.position, goal.transform.position);
 		setScripts ();
 	}
