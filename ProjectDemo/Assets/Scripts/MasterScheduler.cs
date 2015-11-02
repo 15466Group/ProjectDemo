@@ -20,6 +20,8 @@ public class MasterScheduler : MonoBehaviour {
 	private LinkedListNode<GameObject> currCharForPath;
 
 	private float timer;
+	private float seenTime;
+	private float shootDistance;
 
 	// Use this for initialization
 	void Start () {
@@ -45,6 +47,7 @@ public class MasterScheduler : MonoBehaviour {
 				swamps.transform.GetChild (k).GetComponent<MeshCollider> ().enabled = false;
 			}
 		}
+		shootDistance = 10f;
 	
 	}
 	
@@ -114,6 +117,7 @@ public class MasterScheduler : MonoBehaviour {
 		if (mb.isDead) {
 			return;
 		}
+		mb.isShooting = false;
 		RaycastHit hit;
 		Debug.DrawRay (currChar.transform.position, (Mathf.Sqrt (3) * currChar.transform.forward + currChar.transform.right).normalized * 100.0f, Color.red);
 		Debug.DrawRay (currChar.transform.position, (Mathf.Sqrt (3) * currChar.transform.forward - currChar.transform.right).normalized * 100.0f, Color.red);
@@ -121,6 +125,11 @@ public class MasterScheduler : MonoBehaviour {
 			if (Physics.Raycast (currChar.transform.position, player.transform.position - currChar.transform.position, out hit, 100.0f)) {
 				if (hit.collider.gameObject == player) {
 					mb.seesPlayer = true;
+					seenTime += Time.deltaTime;
+					if(seenTime > 1f) {
+						mb.isShooting = true;
+						seenTime = 0f;
+					}
 					mb.poi = player.transform.position;
 				} else if (Vector3.Distance (currChar.transform.position, mb.poi) < 10f) {
 					mb.seesPlayer = false;

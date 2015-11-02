@@ -3,16 +3,29 @@ using System.Collections;
 
 public class MasterBehaviour : MonoBehaviour {
 
+	private Animation anim;
 	public Vector3 poi { get; set; }  //point of interest that he reaches goal on
 	public float health { get; set; }
 	public bool seesPlayer { get; set; }
 	public bool seesDeadPeople { get; set; }
 	public bool hearsSomething { get; set; }
 	public bool isDead { get; set; }
+	public bool isShooting { get; set; }
 
 	public ReachGoal reachGoal { get; set; }
 	private Wander wander;
+	public Vector3 velocity;
 
+	public string idle;
+	public string walking;
+	public string running;
+	public string dying;
+	public string hit;
+	public float walkingSpeed;
+	public GameObject player;
+	private LineRenderer lr;
+
+	private AudioSource gunShot;
 	// Use this for initialization
 	public void Starta (GameObject plane, GameObject swamps, float nodeSize) {
 
@@ -31,36 +44,75 @@ public class MasterBehaviour : MonoBehaviour {
 		reachGoal.goalPos = poi;
 		reachGoal.Starta ();
 		wander.Starta ();
+		anim = GetComponent<Animation> ();
+		anim.CrossFade (idle);
+		walkingSpeed = 10.0f;
+		gunShot = this.GetComponent<AudioSource> ();
 
+		lr = this.GetComponentInParent<LineRenderer> ();
 //		Debug.Log (transform.name);
 	}
 
 	public void Updatea(){
 		//decision tree later for different combination of senses being true
+		lr.enabled = false;
 		if (isDead) {
 			return;
+		}
+		if (isShooting && !gunShot.isPlaying) {
+			shoot ();
 		}
 		if (!(seesPlayer || seesDeadPeople || hearsSomething)) {
 //			Debug.Log ("Wander");
 			wander.Updatea ();
+			velocity = wander.velocity;
 		} else {
 			Debug.Log("Update GoalPos to: " + reachGoal.goalPos);
 			reachGoal.goalPos = poi;
+			velocity = reachGoal.velocity;
 		}
 		//reaching goal is done with pathfinding which is handled by the pathfinder schedule and the masterscheduler
+
+		doAnimation ();
 	}
 
 	public bool isReachingGoal(){
-		return (seesPlayer || seesDeadPeople || hearsSomething);
+		return (seesPlayer || seesDeadPeople || hearsSomething) && !isDead;
 	}
 
 	public void getHit(int damage) {
 		if (isDead) {
 			return;
 		}
-		reachGoal.getHit (damage);
 		if (damage >= 3) {
 			isDead = true;
+			anim.CrossFade (dying);
+		}
+	}
+
+	public void shoot () {
+		gunShot.Play ();
+		lr.SetPosition (0, transform.position + Vector3.up);
+		lr.SetPosition (1, player.transform.position + Vector3.up);
+		lr.SetWidth (1f, 1f);
+		lr.enabled = true;
+
+	}
+
+	public void doAnimation(){
+		Debug.Log ("doinganimation");
+		if (isDead) {
+			return;
+		}
+		float mag = velocity.magnitude;
+		Debug.Log (mag);
+		Debug.Log (walkingSpeed);
+		if (mag > 0.0f && mag <= walkingSpeed) {
+			anim.CrossFade (walking);
+		} else if (mag > walkingSpeed) {
+			anim.CrossFade (running);
+		} else {
+			anim.CrossFade (idle);
 		}
 	}
 }

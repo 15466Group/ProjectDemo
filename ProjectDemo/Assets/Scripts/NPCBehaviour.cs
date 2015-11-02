@@ -7,8 +7,8 @@ public class NPCBehaviour : MonoBehaviour {
 	//superclass for wander and reach goal behaviors
 	//accelerate object towards a position (either randomly generated [wander] or a goal [reachgoal])
 	
-	private Animation anim;
-	protected Vector3 velocity { get; set; }
+	//private Animation anim;
+	public Vector3 velocity { get; set; }
 	public Vector3 acceleration { get; set; }
 	protected float accMag { get; set; }
 	protected float accMagDefault { get; set; }
@@ -24,8 +24,7 @@ public class NPCBehaviour : MonoBehaviour {
 	protected float closeRayDistDefault { get; set; }
 
 	protected Vector3 biasDir { get; set; }
-	
-	private float walkingSpeed;
+
 	private float charWidth;
 	private float smooth;
 	private float obstacleWeight;
@@ -34,20 +33,14 @@ public class NPCBehaviour : MonoBehaviour {
 	protected bool isWanderer { get; set; }
 	protected bool isReachingGoal { get; set; }
 	protected bool inArrivalRadius { get; set; }
-
-	public string idle;
-	public string walking;
-	public string running;
-	public string dying;
-	public string hit;
 	
+
 	// Use this for initialization
 	public virtual void Starta () {
 		velocity = new Vector3 ();
 		acceleration = new Vector3 ();
 		accMagDefault = 50.0f;
 		speedMaxDefault = 30.0f;
-		walkingSpeed = 15.0f;
 		epsilon = 2.0f;
 		searchRadius = 100.0f;
 		rayDistDefault = 20.0f;
@@ -59,9 +52,9 @@ public class NPCBehaviour : MonoBehaviour {
 		obstacleWeight = 3.0f;
 		charWeight = 1.0f;
 		accMag = accMagDefault;
-		speedMax = speedMaxDefault;
-		anim = GetComponent<Animation> ();
-		anim.CrossFade (idle);
+		//speedMax = speedMaxDefault;
+//		anim = GetComponent<Animation> ();
+//		anim.CrossFade (idle);
 	}
 	
 	// Update is called once per frame
@@ -69,18 +62,7 @@ public class NPCBehaviour : MonoBehaviour {
 		biasDir = Vector3.zero;
 		doPositionAndVelocity ();
 		doAcceleration ();
-		doAnimation ();
-	}
-
-	public void doAnimation(){
-		float mag = velocity.magnitude;
-		if (mag > 0.0f && mag <= walkingSpeed) {
-			anim.CrossFade (walking);
-		} else if (mag > walkingSpeed) {
-			anim.CrossFade (running);
-		} else {
-			anim.CrossFade (idle);
-		}
+		//doAnimation ();
 	}
 
 	protected void doPositionAndVelocity(){
@@ -235,23 +217,23 @@ public class NPCBehaviour : MonoBehaviour {
 	}
 
 	//upon getting hit, momentarily set velocity to zero
-	public virtual void getHit(int damage) {
-		switch (damage) {
-		case 0 :
-			break;
-		case 1 :
-			anim.CrossFade (hit);
-			Debug.Log ("hit");
-			break;
-		case 2 :
-			anim.CrossFade (hit);
-			break;
-		case 3 :
-			anim.CrossFade (dying);
-			break;
-		default:
-			Debug.Log ("default");
-			break;
-		}
-	}
+//	public virtual void getHit(int damage) {
+//		switch (damage) {
+//		case 0 :
+//			break;
+//		case 1 :
+//			anim.CrossFade (hit);
+//			Debug.Log ("hit");
+//			break;
+//		case 2 :
+//			anim.CrossFade (hit);
+//			break;
+//		case 3 :
+//			anim.CrossFade (dying);
+//			break;
+//		default:
+//			Debug.Log ("default");
+//			break;
+//		}
+//	}
 }

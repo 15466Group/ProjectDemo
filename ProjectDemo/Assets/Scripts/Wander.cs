@@ -25,6 +25,7 @@ public class Wander : NPCBehaviour {
 		tempDir = targetDir;
 		isWanderer = true;
 		isReachingGoal = false;
+		speedMax = 10.0f;
 
 	}
 	

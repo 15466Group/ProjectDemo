@@ -45,6 +45,7 @@ public class ReachGoal: NPCBehaviour {
 		G.initStart ();
 		state = new State (new List<Node> (), new List<Node> (), new Dictionary<Node, Node> (),
 		                  null, null, swampCost, G, null, false, false);
+		speedMax = 20.0f;
 	}
 
 	public Node nextStep () {
