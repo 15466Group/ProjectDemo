@@ -52,7 +52,7 @@ public class NPCBehaviour : MonoBehaviour {
 		obstacleWeight = 3.0f;
 		charWeight = 1.0f;
 		accMag = accMagDefault;
-		//speedMax = speedMaxDefault;
+		speedMax = speedMaxDefault;
 //		anim = GetComponent<Animation> ();
 //		anim.CrossFade (idle);
 	}

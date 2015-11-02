@@ -14,20 +14,27 @@ public class MasterBehaviour : MonoBehaviour {
 
 	public ReachGoal reachGoal { get; set; }
 	private Wander wander;
-	public Vector3 velocity;
+	private StandStill standstill;
+	private Patrol patrol;
+	public string defaultBehaviour;
+	private Vector3 velocity;
 
 	public string idle;
 	public string walking;
 	public string running;
 	public string dying;
 	public string hit;
-	public float walkingSpeed;
+	private float walkingSpeed;
 	public GameObject player;
 	private LineRenderer lr;
+
+	private bool fixedDeadCollider;
 
 	private AudioSource gunShot;
 	// Use this for initialization
 	public void Starta (GameObject plane, GameObject swamps, float nodeSize) {
+
+		fixedDeadCollider = false;
 
 		poi = Vector3.zero;
 		health = 100.0f;
@@ -37,6 +44,8 @@ public class MasterBehaviour : MonoBehaviour {
 
 		reachGoal = GetComponent<ReachGoal> ();
 		wander = GetComponent<Wander> ();
+		standstill = GetComponent<StandStill> ();
+		patrol = GetComponent<Patrol> ();
 
 		reachGoal.plane = plane;
 		reachGoal.swamps = swamps;
@@ -44,6 +53,8 @@ public class MasterBehaviour : MonoBehaviour {
 		reachGoal.goalPos = poi;
 		reachGoal.Starta ();
 		wander.Starta ();
+		patrol.Starta ();
+		standstill.Starta ();
 		anim = GetComponent<Animation> ();
 		anim.CrossFade (idle);
 		walkingSpeed = 10.0f;
@@ -57,6 +68,12 @@ public class MasterBehaviour : MonoBehaviour {
 		//decision tree later for different combination of senses being true
 		lr.enabled = false;
 		if (isDead) {
+			if (!fixedDeadCollider){
+				transform.gameObject.layer = LayerMask.NameToLayer("Obstacles"); //now an obstacle;
+				BoxCollider bc = GetComponent<BoxCollider>();
+				bc.center = new Vector3(transform.position.x, -0.5f, transform.position.z);
+				fixedDeadCollider = true;
+			}
 			return;
 		}
 		if (isShooting && !gunShot.isPlaying) {
@@ -64,8 +81,9 @@ public class MasterBehaviour : MonoBehaviour {
 		}
 		if (!(seesPlayer || seesDeadPeople || hearsSomething)) {
 //			Debug.Log ("Wander");
-			wander.Updatea ();
-			velocity = wander.velocity;
+//			wander.Updatea();
+//			velocity = wander.velocity;
+			doDefaultBehaviour();
 		} else {
 			Debug.Log("Update GoalPos to: " + reachGoal.goalPos);
 			reachGoal.goalPos = poi;
@@ -74,6 +92,20 @@ public class MasterBehaviour : MonoBehaviour {
 		//reaching goal is done with pathfinding which is handled by the pathfinder schedule and the masterscheduler
 
 		doAnimation ();
+	}
+
+	void doDefaultBehaviour(){
+		if (string.Compare("StandStill", defaultBehaviour) == 0) {
+			standstill.Updatea ();
+			velocity = standstill.velocity;
+		} else if (string.Compare("Patrol", defaultBehaviour) == 0) {
+			patrol.Updatea ();
+			velocity = patrol.velocity;
+		} else {
+			wander.Updatea();
+			velocity = wander.velocity;
+		}
+
 	}
 
 	public bool isReachingGoal(){
@@ -86,6 +118,8 @@ public class MasterBehaviour : MonoBehaviour {
 		}
 		if (damage >= 3) {
 			isDead = true;
+			Debug.Log ("isDead");
+			Debug.Break();
 			anim.CrossFade (dying);
 		}
 	}
@@ -100,13 +134,11 @@ public class MasterBehaviour : MonoBehaviour {
 	}
 
 	public void doAnimation(){
-		Debug.Log ("doinganimation");
+//		Debug.Log ("doinganimation");
 		if (isDead) {
 			return;
 		}
 		float mag = velocity.magnitude;
-		Debug.Log (mag);
-		Debug.Log (walkingSpeed);
 		if (mag > 0.0f && mag <= walkingSpeed) {
 			anim.CrossFade (walking);
 		} else if (mag > walkingSpeed) {

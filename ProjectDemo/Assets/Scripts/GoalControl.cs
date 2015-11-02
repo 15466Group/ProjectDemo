@@ -74,11 +74,11 @@ public class GoalControl : MonoBehaviour {
 
 	void OnDrawGizmos(){
 		Gizmos.color = Color.magenta;
-		Gizmos.DrawSphere (transform.position + (transform.up * transform.localScale.y), radius);
+		Gizmos.DrawSphere (transform.position + (transform.up * transform.localScale.y*1.3f), radius);
 	}
 
 	bool checkCollisions(){
-		Collider[] hits = Physics.OverlapSphere (transform.position + (transform.up * transform.localScale.y), radius, obstacleLayer | soldierLayer);
+		Collider[] hits = Physics.OverlapSphere (transform.position + (transform.up * transform.localScale.y*1.3f), radius, obstacleLayer | soldierLayer);
 		if (hits.Length > 0) {
 			transform.position = previousValidPos;
 			return false;
