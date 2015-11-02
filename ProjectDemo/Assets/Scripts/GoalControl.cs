@@ -3,22 +3,33 @@ using System.Collections;
 
 public class GoalControl : MonoBehaviour {
 
+	public string idle;
+	public string walking;
+	public string running;
+
 	private Animation anim;
 	private float smooth;
 	private float scaler;
 	private Vector3 velocity;
 	private float walkingSpeed;
+
 	private Vector3 previousValidPos;
+	private float radius;
+	private int obstacleLayer;
+	private int soldierLayer;
 	
 	void Start()
 	{
+		radius = 2.0f;
 		smooth = 5.0f;
-		scaler = 40.0f;
+		scaler = 20.0f;
 		walkingSpeed = 5.0f;
 		velocity = Vector3.zero;
 		anim = GetComponent<Animation> ();
-		anim.CrossFade ("soldierIdleRelaxed");
+		anim.CrossFade (idle);
 		previousValidPos = transform.position;
+		soldierLayer = 1 << (LayerMask.NameToLayer("Soldier"));
+		obstacleLayer = 1 << (LayerMask.NameToLayer("Obstacles"));
 	}
 	void Update()
 	{
@@ -30,8 +41,10 @@ public class GoalControl : MonoBehaviour {
 		Vector3 targetPosition = transform.position + velocity * Time.deltaTime;
 		if (velocity != new Vector3())
 			RotateTo (targetPosition);
-		previousValidPos = transform.position;
-		transform.position += velocity * Time.deltaTime;
+		if (checkCollisions ()) {
+			previousValidPos = transform.position;
+			transform.position += velocity * Time.deltaTime;
+		}
 		doAnimation ();
 		
 	}
@@ -39,11 +52,11 @@ public class GoalControl : MonoBehaviour {
 	void doAnimation(){
 		float mag = velocity.magnitude;
 		if (mag > 0.0f && mag <= walkingSpeed) {
-			anim.CrossFade ("soldierWalk");
+			anim.CrossFade (walking);
 		} else if (mag > walkingSpeed) {
-			anim.CrossFade ("soldierRun");
+			anim.CrossFade (running);
 		} else {
-			anim.CrossFade ("soldierIdleRelaxed");
+			anim.CrossFade (idle);
 		}
 	}
 
@@ -59,8 +72,17 @@ public class GoalControl : MonoBehaviour {
 		transform.rotation = Quaternion.Slerp (transform.rotation, destinationRotation, Time.deltaTime * smooth);
 	}
 
-	void OnCollisionEnter(Collision col){
-		Debug.Log (col.gameObject.name);
-		transform.position = previousValidPos;
+	void OnDrawGizmos(){
+		Gizmos.color = Color.magenta;
+		Gizmos.DrawSphere (transform.position + (transform.up * transform.localScale.y), radius);
+	}
+
+	bool checkCollisions(){
+		Collider[] hits = Physics.OverlapSphere (transform.position + (transform.up * transform.localScale.y), radius, obstacleLayer | soldierLayer);
+		if (hits.Length > 0) {
+			transform.position = previousValidPos;
+			return false;
+		}
+		return true;
 	}
 }
