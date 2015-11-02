@@ -57,7 +57,6 @@ public class RCameraControl : MonoBehaviour {
 		if (Input.GetMouseButtonDown (0) && !gunShot.isPlaying) {
 			RaycastHit hit;
 			if (Physics.Raycast (transform.position, transform.forward, out hit)) {
-				Debug.Log (hit.collider.gameObject.transform.parent.name);
 				if(hit.collider.tag == "Soldier") {
 					//hit.collider.gameObject.GetComponent<ReachGoal>().kill();
 					Debug.Log ("killed");
