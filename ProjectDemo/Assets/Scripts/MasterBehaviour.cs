@@ -84,7 +84,8 @@ public class MasterBehaviour : MonoBehaviour {
 			}
 			return;
 		}
-		if (isShooting && !gunShot.isPlaying) {
+		//and if the character is facing the character
+		if (isShooting && !gunShot.isPlaying && !gc.isDead) {
 			shoot ();
 		}
 		if (!(seesPlayer || seesDeadPeople || hearsSomething)) {

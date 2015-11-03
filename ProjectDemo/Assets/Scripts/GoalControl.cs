@@ -20,7 +20,7 @@ public class GoalControl : MonoBehaviour {
 	private int soldierLayer;
 	private int health;
 
-	private bool isDead;
+	public bool isDead { get; set; } 
 	private Texture2D healthTex;
 	
 	void Start()
