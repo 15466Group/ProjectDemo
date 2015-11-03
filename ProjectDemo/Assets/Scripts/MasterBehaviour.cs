@@ -11,6 +11,7 @@ public class MasterBehaviour : MonoBehaviour {
 	public bool hearsSomething { get; set; }
 	public bool isDead { get; set; }
 	public bool isShooting { get; set; }
+	public bool disturbed { get; set;}
 
 	public ReachGoal reachGoal { get; set; }
 	private Wander wander;
@@ -24,8 +25,12 @@ public class MasterBehaviour : MonoBehaviour {
 	public string running;
 	public string dying;
 	public string hit;
+
+	public float seenTime;
+
 	private float walkingSpeed;
 	public GameObject player;
+	private GoalControl gc;
 	private LineRenderer lr;
 
 	private bool fixedDeadCollider;
@@ -41,11 +46,13 @@ public class MasterBehaviour : MonoBehaviour {
 		seesPlayer = false;
 		seesDeadPeople = false;
 		hearsSomething = false;
+		disturbed = false;
 
 		reachGoal = GetComponent<ReachGoal> ();
 		wander = GetComponent<Wander> ();
 		standstill = GetComponent<StandStill> ();
 		patrol = GetComponent<Patrol> ();
+		gc = player.GetComponent<GoalControl> ();
 
 		reachGoal.plane = plane;
 		reachGoal.swamps = swamps;
@@ -58,9 +65,10 @@ public class MasterBehaviour : MonoBehaviour {
 		anim = GetComponent<Animation> ();
 		anim.CrossFade (idle);
 		walkingSpeed = 10.0f;
-		gunShot = this.GetComponent<AudioSource> ();
+		gunShot = this.GetComponents<AudioSource> ()[0];
 
 		lr = this.GetComponentInParent<LineRenderer> ();
+		seenTime = 0f;
 //		Debug.Log (transform.name);
 	}
 
@@ -83,7 +91,13 @@ public class MasterBehaviour : MonoBehaviour {
 //			Debug.Log ("Wander");
 //			wander.Updatea();
 //			velocity = wander.velocity;
-			doDefaultBehaviour();
+			if(disturbed) {
+				wander.Updatea();
+				velocity = wander.velocity;
+			}
+			else {
+				doDefaultBehaviour();
+			}
 		} else {
 			Debug.Log("Update GoalPos to: " + reachGoal.goalPos);
 			reachGoal.goalPos = poi;
@@ -118,8 +132,8 @@ public class MasterBehaviour : MonoBehaviour {
 		}
 		if (damage >= 3) {
 			isDead = true;
-			Debug.Log ("isDead");
-			Debug.Break();
+//			Debug.Log ("isDead");
+//			Debug.Break();
 			anim.CrossFade (dying);
 		}
 	}
@@ -130,6 +144,7 @@ public class MasterBehaviour : MonoBehaviour {
 		lr.SetPosition (1, player.transform.position + Vector3.up);
 		lr.SetWidth (1f, 1f);
 		lr.enabled = true;
+		gc.getHit ();
 
 	}
 

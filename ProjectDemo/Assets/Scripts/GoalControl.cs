@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GoalControl : MonoBehaviour {
@@ -6,6 +6,7 @@ public class GoalControl : MonoBehaviour {
 	public string idle;
 	public string walking;
 	public string running;
+	public string dying;
 
 	private Animation anim;
 	private float smooth;
@@ -17,6 +18,10 @@ public class GoalControl : MonoBehaviour {
 	private float radius;
 	private int obstacleLayer;
 	private int soldierLayer;
+	private int health;
+
+	private bool isDead;
+	private Texture2D healthTex;
 	
 	void Start()
 	{
@@ -30,9 +35,15 @@ public class GoalControl : MonoBehaviour {
 		previousValidPos = transform.position;
 		soldierLayer = 1 << (LayerMask.NameToLayer("Soldier"));
 		obstacleLayer = 1 << (LayerMask.NameToLayer("Obstacles"));
+		health = 5;
+		healthTex = new Texture2D(1, 1);
+		healthTex.SetPixel(0,0,Color.green);
+		healthTex.Apply();
 	}
 	void Update()
 	{
+		if (isDead)
+			return;
 		float moveHorizontal = Input.GetAxis ("Horizontal");
 		float moveVertical = Input.GetAxis ("Vertical");
 		
@@ -84,5 +95,27 @@ public class GoalControl : MonoBehaviour {
 			return false;
 		}
 		return true;
+	}
+
+	public void getHit() {
+		health --;
+		if (health == 0) {
+			die ();
+		}
+	}
+
+	void die() {
+		isDead = true;
+		anim.CrossFade (dying);
+	}
+
+	void OnGUI () {
+		for (int i = 0; i < health; i++) {
+			DrawQuad (new Rect(15 + 20*i, Screen.height - 50, 0.5f, 30.0f));
+		}
+	}
+	void DrawQuad(Rect position) {
+		GUI.skin.box.normal.background = healthTex;
+		GUI.Box(position, GUIContent.none);
 	}
 }

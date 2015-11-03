@@ -6,8 +6,8 @@ public class RCameraControl : MonoBehaviour {
 	
 	public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
 	public RotationAxes axes = RotationAxes.MouseXAndY;
-	public float sensitivityX = 2f;
-	public float sensitivityY = 2f;
+	private float sensitivityM;
+	public float sensitivityMDefault;
 	public float sensitivityW = 2f;
 
 	public float minimumX = -60f;
@@ -36,22 +36,24 @@ public class RCameraControl : MonoBehaviour {
 		rotationX = 0.0f;
 		FOV = 90.0f;
 		gunShot = this.GetComponent<AudioSource> ();
+		wantedMode = CursorLockMode.Locked;
+		sensitivityM = sensitivityMDefault;
 	}
 
 	
 	void Update ()
 	{
-
-		rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+		rotationX += Input.GetAxis("Mouse X") * sensitivityM;
 		rotationX = Mathf.Clamp (rotationX, minimumX, maximumX);
-		rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+		rotationY += Input.GetAxis("Mouse Y") * sensitivityM;
 		rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
 		
 		transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
 
 		FOV -= Input.GetAxisRaw ("Mouse ScrollWheel") * sensitivityW;
 		FOV = Mathf.Clamp (FOV, minimumFOV, maximumFOV);
-
+		sensitivityM = sensitivityMDefault * FOV / maximumFOV;
+		sensitivityM = Mathf.Clamp (FOV, 1f/8f * sensitivityMDefault, sensitivityMDefault);
 		Camera.main.fieldOfView = FOV;
 
 		if (Input.GetMouseButtonDown (0) && !gunShot.isPlaying) {
@@ -65,6 +67,9 @@ public class RCameraControl : MonoBehaviour {
 			}
 			gunShot.Play ();
 		}
+
+		if (Input.GetKeyDown (KeyCode.R))
+			Application.LoadLevel(Application.loadedLevel);
 
 	}
 
@@ -87,10 +92,27 @@ public class RCameraControl : MonoBehaviour {
 //		GUI.DrawTexture (new Rect (-tex.width * textureCrop.x, -tex.height * textureCrop.y, tex.width * textureCrop.width, tex.height * textureCrop.height), tex );
 //		GUI.EndGroup ();
 
-		GUILayout.BeginVertical ();
-		// Release cursor on escape keypress
-		if (Input.GetKeyDown (KeyCode.Escape))
+		if (Input.GetKeyDown (KeyCode.Escape)) {
 			Cursor.lockState = wantedMode = CursorLockMode.None;
+		}
+
+		GUILayout.BeginVertical ();
+//		 Release cursor on escape keypress
+//		if (Input.GetKeyDown (KeyCode.Escape)) {
+//
+//			switch(Cursor.lockState) {
+//			case CursorLockMode.None:
+//				wantedMode = CursorLockMode.Locked;
+//				break;
+//			case CursorLockMode.Locked:
+//				wantedMode = CursorLockMode.None;
+//				break;
+//			case CursorLockMode.Confined:
+//				wantedMode = CursorLockMode.None;
+//				break;
+//			}
+//
+//		}
 		
 		switch (Cursor.lockState)
 		{

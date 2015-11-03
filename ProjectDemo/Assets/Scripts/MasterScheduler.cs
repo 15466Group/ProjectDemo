@@ -119,20 +119,30 @@ public class MasterScheduler : MonoBehaviour {
 		}
 		mb.isShooting = false;
 		RaycastHit hit;
+		float angle;
+		if (mb.seesPlayer)
+			angle = 360.0f;
+		else
+			angle = 30.0f;
 		Debug.DrawRay (currChar.transform.position, (Mathf.Sqrt (3) * currChar.transform.forward + currChar.transform.right).normalized * 100.0f, Color.red);
 		Debug.DrawRay (currChar.transform.position, (Mathf.Sqrt (3) * currChar.transform.forward - currChar.transform.right).normalized * 100.0f, Color.red);
-		if (Vector3.Angle (currChar.transform.forward, player.transform.position - currChar.transform.position) <= 30.0f) {
+		if (Vector3.Angle (currChar.transform.forward, player.transform.position - currChar.transform.position) <= angle) {
 			if (Physics.Raycast (currChar.transform.position, player.transform.position - currChar.transform.position, out hit, 100.0f)) {
 				if (hit.collider.gameObject == player) {
+					if(!mb.seesPlayer) {
+						currChar.GetComponents <AudioSource> ()[1].Play ();
+					}
 					mb.seesPlayer = true;
-					seenTime += Time.deltaTime;
-					if(seenTime > 1f) {
+					mb.seenTime += Time.deltaTime;
+					if(mb.seenTime > 1f) {
 						mb.isShooting = true;
-						seenTime = 0f;
+						mb.seenTime = 0f;
 					}
 					mb.poi = player.transform.position;
+					mb.disturbed = true;
 				} else if (Vector3.Distance (currChar.transform.position, mb.poi) < 10f) {
 					mb.seesPlayer = false;
+					mb.seenTime = 0f;
 					mb.seesDeadPeople = false;
 					mb.hearsSomething = false;
 					mb.health = 100.0f;
@@ -140,6 +150,7 @@ public class MasterScheduler : MonoBehaviour {
 				}
 			} else if (Vector3.Distance (currChar.transform.position, mb.poi) < 10f) {
 				mb.seesPlayer = false;
+				mb.seenTime = 0f;
 				mb.seesDeadPeople = false;
 				mb.hearsSomething = false;
 				mb.health = 100.0f;
